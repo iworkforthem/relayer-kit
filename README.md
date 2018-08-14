@@ -25,11 +25,13 @@ The Dharma Relayer Kit allows you &mdash; the entrepreneur &mdash; to focus on y
     -   [Backend](#backend)
     -   [Frontend](#frontend)
 -   [Running on the Kovan Testnet](#running-on-the-kovan-testnet)
-    -   [Backend](#backend-1)
-    -   [Frontend](#frontend-1)
+    -   [Securing dummy tokens](#securing-dummy-tokens)
+    -   [Build your app](#build-your-app)
+    -   [Understand the NETWORK environment variable](#understand-the-network-environment-variable)
+    -   [Run the app](#run-the-app)
 -   [Deployment](#deployment)
     -   [Create a new Heroku app](#create-a-new-heroku-app)
-    -   [Overwrite the app's files with your relayer kit](#overwrite-the-apps-files-with-your-relayer-kit)
+    -   [Push your repo to Heroku](#push-your-repo-to-heroku)
     -   [Open your new relayer on Heroku](#open-your-new-relayer-on-heroku)
 -   [Troubleshooting](#troubleshooting)
     -   [I'm getting an error that blockchain failed to start](#im-getting-an-error-that-blockchain-failed-to-start)
@@ -74,8 +76,6 @@ And launch a local blockchain via:
 yarn blockchain
 ```
 
-Note: To connect your app to MetaMask, simply skip this step.
-
 ## Backend
 
 And launch the server via:
@@ -94,42 +94,43 @@ yarn start
 
 # Running on the Kovan Testnet
 
-Kovan is a test blockchain (referred to as a "testnet") for Ethereum contracts. The Dharma team has deployed our contracts to
-the Kovan testnet, so that we, and developers building on top of Dharma, can test our tools and
-products in a way that is similar to mainnet, but without using real tokens.
+Kovan is a test blockchain (referred to as a "testnet") for Ethereum smart contracts.
 
-To get access to Kovan tokens for testing your relayer, please visit [https://wallet.dharma.io](https://wallet.dharma.io),
-and set your Metamask to Kovan mode. This will allow you to get Kovan test tokens for Dharma
-contracts.
+The Dharma team has deployed our contracts to the Kovan testnet so developers building on top of Dharma can simulate their apps running in production &mdash; without the need to use real tokens.
 
-There is no need for running a local blockchain when developing against a testnet, so we skip
-the step of running a blockchain here.
+## Securing dummy tokens
 
-## Backend
+You can secure dummy tokens for use on the Kovan testnet via [https://wallet.dharma.io](https://wallet.dharma.io). Be sure to set your MetaMask to Kovan.
 
-First, build a "production" version of your app using:
+## Build your app
+
+First, build a "production" version of your app:
 
 ```
 yarn build
 ```
 
+## Understand the NETWORK environment variable
+
 We use an environment variable to allow the server to specify a different database for your
-Kovan Loan Requests - since Loan Requests for one blockchain will not be valid for another. The environment variable we modify is `NETWORK=kovan` (and
-likewise `NETWORK=mainnet` for mainnet.) An example of running this on your command line would be:
+Kovan Loan Requests - since Loan Requests for one blockchain will not be valid for another (e.g., addresses will differ).
+
+The environment variable we modify is `NETWORK=kovan` (and likewise `NETWORK=mainnet` for mainnet).
+
+## Run the app
+
+Run your app by specifying the Kovan network before initiating the server:
 
 ```
-NEWORK=kovan yarn server
+NETWORK=kovan yarn server
 ```
 
-This will run a server on port 8000, including your production app.
+This will run a server on port 8000, alongside your frontend application.
+
 Visit your app on this server by visiting [http://localhost:8000](http://localhost:8000).
 
-Note: Changes you make to your app won't be reflected immediate when developing in this state.
-You need to rebuild your app and then restart your server to see changes.
-
-## Frontend
-
-We won't run a separate frontend when testing against a testnet.
+Note: Changes you make to your app won't be reflected immediately when developing in this state.
+You'll need to rebuild your app and then restart your server to see changes.
 
 # Deployment
 
@@ -147,7 +148,7 @@ heroku create
 
 Otherwise, follow the instructions Heroku provides for [creating a new Heroku app](https://devcenter.heroku.com/articles/creating-apps).
 
-## Overwrite the app's files with your relayer kit
+## Push your repo to Heroku
 
 ```
 git push -f heroku master
