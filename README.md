@@ -121,11 +121,11 @@ likewise `NETWORK=mainnet` for mainnet.) An example of running this on your comm
 NEWORK=kovan yarn server
 ```
 
-This will run a server on port 8000, including your production app. 
+This will run a server on port 8000, including your production app.
 Visit your app on this server by visiting [http://localhost:8000](http://localhost:8000).
 
 Note: Changes you make to your app won't be reflected immediate when developing in this state.
-You need to rebuild your app and then restart your server to see changes. 
+You need to rebuild your app and then restart your server to see changes.
 
 ## Frontend
 
@@ -141,17 +141,23 @@ In your command line, make sure you're logged into heroku, and then enter the fo
 
 If you are logged into Heroku on your command line, you can simply run:
 
-`heroku create`
+```
+heroku create
+```
 
 Otherwise, follow the instructions Heroku provides for [creating a new Heroku app](https://devcenter.heroku.com/articles/creating-apps).
 
 ## Overwrite the app's files with your relayer kit
 
-`git push -f heroku master`
+```
+git push -f heroku master
+```
 
 ## Open your new relayer on Heroku
 
-`heroku open`
+```
+heroku open
+```
 
 # Troubleshooting
 
@@ -159,24 +165,24 @@ You can use this section to debug any problems you might run into while setting 
 
 ## I'm getting an error that blockchain failed to start
 
-In order to run a local blockchain (via `yarn blockchain`), we use a tool called [Ganache-CLI](https://github.com/trufflesuite/ganache-cli), and we boot it up with all
-of the Dharma Protocol contracts pre-installed.
+In order to run a local blockchain (via `yarn blockchain`), we use a tool called [Ganache-CLI](https://github.com/trufflesuite/ganache-cli).
 
 This requires that we install Ganache-CLI first, which sometimes requires extra permissions
 (depending on your computer's setup).
 
 Note: There is no strict requirement to use our blockchain setup - if you like, you can do all of your
-development against Kovan, where our contracts are deployed. The preconfigured local blockchain is
+development against the Kovan testnet, where our contracts are deployed. The preconfigured local blockchain is
 just for quicker development.
 
-If you're having trouble with running the local blockchain, I would consult the Ganache-CLI setup
-page (https://github.com/trufflesuite/ganache-cli) and try to get that running first, and then try running `yarn blockchain` in your relayer
-project again.
+If you're having trouble with running the local blockchain, we recommend you consult the Ganache-CLI setup
+page (https://github.com/trufflesuite/ganache-cli) and try to get that running first, and then try running `yarn blockchain` in your relayer project again.
 
 If you're comfortable doing so, then to get around the permissions problem you might end up using your
 computer's "root" permissions to install Ganache-CLI, by running:
 
-`sudo npm install -g ganache-cli@6.1.3`.
+```
+sudo npm install -g ganache-cli@6.1.3
+```
 
 # FAQ
 
