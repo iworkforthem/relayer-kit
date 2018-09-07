@@ -61,7 +61,8 @@
         "heroku-postbuild": "yarn node scripts/build.js"
     },
     "devDependencies": {
-        "dharma-chain": "^1.0.14"
+        "dharma-chain": "^1.0.14",
+        "prettier": "^1.14.2"
     },
     "jest": {
         "collectCoverageFrom": [
