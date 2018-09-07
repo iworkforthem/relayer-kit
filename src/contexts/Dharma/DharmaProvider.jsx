@@ -1,18 +1,35 @@
 import React, { Component } from "react";
-import Dharma from "@dharmaprotocol/dharma.js";
+import { Dharma, Web3 } from "@dharmaprotocol/dharma.js";
 
 import DharmaContext from "./DharmaContext";
 
 // Get the host from the current environment. If it is not specified, we will assume we
 // are running a testnet or production build and use Metamask.
-const blockchainHost = process.env.REACT_APP_BLOCKCHAIN_HOST;
+const HOST = process.env.REACT_APP_BLOCKCHAIN_HOST;
 
-let dharma;
-if (blockchainHost) {
-    dharma = new Dharma(blockchainHost);
-} else {
-    dharma = new Dharma();
+/**
+ * This method returns a Web3 provider, which is passed to Dharma.js and used to communicate with an
+ * Ethereum blockchain node.
+ *
+ * For local development purposes, the blockchain node is usually a localhost URL such as
+ * localhost:8545. In this case the function should return Web3's HTTP Provider, configured to
+ * use localhost:8545. Depending on the deployment context, there may also be a provider on an
+ * injected web3 instance (for example when using MetaMask in a browser), in which case that
+ * provider is returned.
+ *
+ * @returns {Web3.Provider}
+ */
+function getWeb3Provider() {
+    if (HOST) {
+        return new Web3.providers.HttpProvider(HOST);
+    } else if (window.web3) {
+        return window.web3.currentProvider;
+    } else {
+        throw new Error("No web3 provider reachable.");
+    }
 }
+
+const dharma = new Dharma(getWeb3Provider());
 
 /**
  * Allows any children of this provider to have access to an instance of Dharma.js that is
@@ -45,7 +62,7 @@ class DharmaProvider extends Component {
     }
 
     getUserTokens() {
-        const { Tokens } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         // Assume the tokens are out of date.
         this.setState({
@@ -55,9 +72,7 @@ class DharmaProvider extends Component {
         dharma.blockchain.getAccounts().then((accounts) => {
             const owner = accounts[0];
 
-            const tokens = new Tokens(dharma, owner);
-
-            tokens.get().then((tokenData) => {
+            Token.all(dharma, owner).then((tokenData) => {
                 this.setState({
                     tokens: tokenData,
                 });

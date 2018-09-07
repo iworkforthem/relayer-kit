@@ -1,5 +1,5 @@
 // External libraries
-import Dharma from "@dharmaprotocol/dharma.js";
+import { Dharma } from "@dharmaprotocol/dharma.js";
 import React from "react";
 import BootstrapTable from "react-bootstrap-table-next";
 
