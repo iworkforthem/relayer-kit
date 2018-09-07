@@ -50,7 +50,7 @@ class DharmaProvider extends Component {
     }
 
     getUserTokens() {
-        const { Tokens } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         // Assume the tokens are out of date.
         this.setState({
@@ -60,9 +60,7 @@ class DharmaProvider extends Component {
         dharma.blockchain.getAccounts().then((accounts) => {
             const owner = accounts[0];
 
-            const tokens = new Tokens(dharma, owner);
-
-            tokens.get().then((tokenData) => {
+            Token.all(dharma, owner).then((tokenData) => {
                 this.setState({
                     tokens: tokenData,
                 });
