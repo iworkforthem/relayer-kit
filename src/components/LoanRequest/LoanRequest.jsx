@@ -1,4 +1,4 @@
-import Dharma from "@dharmaprotocol/dharma.js";
+import { Dharma } from "@dharmaprotocol/dharma.js";
 import React, { Component } from "react";
 
 import Api from "../../services/api";
@@ -65,7 +65,7 @@ class LoanRequest extends Component {
         const { loanRequest } = this.state;
 
         loanRequest
-            .fill()
+            .fillAsCreditor()
             .then((txHash) => {
                 const { transactions } = this.state;
                 transactions.push({ txHash, description: TRANSACTION_DESCRIPTIONS.fill });
@@ -86,14 +86,13 @@ class LoanRequest extends Component {
 
         const { dharma } = this.props;
 
-        const { Allowance } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         const owner = await dharma.blockchain.getCurrentAccount();
 
         const terms = loanRequest.getTerms();
 
-        const allowance = new Allowance(dharma, owner, terms.principalTokenSymbol);
-        const txHash = await allowance.makeUnlimitedIfNecessary();
+        const txHash = await Token.makeAllowanceUnlimitedIfNecessary(dharma, terms.principalTokenSymbol, owner);
 
         if (txHash) {
             transactions.push({ txHash, description: TRANSACTION_DESCRIPTIONS.allowance });
@@ -125,14 +124,13 @@ class LoanRequest extends Component {
         const { dharma } = this.props;
         const { loanRequest } = this.state;
 
-        const { Tokens } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         const currentAccount = await dharma.blockchain.getCurrentAccount();
 
-        const tokens = new Tokens(dharma, currentAccount);
         const terms = loanRequest.getTerms();
 
-        const tokenData = await tokens.getTokenDataForSymbol(terms.principalTokenSymbol);
+        const tokenData = await Token.getDataForSymbol(dharma, terms.principalTokenSymbol, currentAccount);
 
         const hasSufficientAllowance =
             tokenData.hasUnlimitedAllowance || tokenData.allowance >= terms.principalAmount;

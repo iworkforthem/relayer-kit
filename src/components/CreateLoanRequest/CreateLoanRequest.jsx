@@ -10,7 +10,7 @@ import {
     HelpBlock,
 } from "react-bootstrap";
 
-import Dharma from "@dharmaprotocol/dharma.js";
+import { Dharma } from "@dharmaprotocol/dharma.js";
 
 // Components
 import AuthorizableAction from "../AuthorizableAction/AuthorizableAction";
@@ -101,13 +101,11 @@ class CreateLoanRequest extends Component {
 
         const symbol = tokenSymbol ? tokenSymbol : collateralTokenSymbol;
 
-        const { Tokens } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         const currentAccount = await dharma.blockchain.getCurrentAccount();
 
-        const tokens = new Tokens(dharma, currentAccount);
-
-        const tokenData = await tokens.getTokenDataForSymbol(symbol);
+        const tokenData = await Token.getDataForSymbol(dharma, symbol, currentAccount);
 
         const hasSufficientAllowance =
             tokenData.hasUnlimitedAllowance || tokenData.allowance >= collateralAmount;
@@ -120,22 +118,20 @@ class CreateLoanRequest extends Component {
     async authorizeCollateralTransfer() {
         const { dharma } = this.props;
 
-        const { Allowance } = Dharma.Types;
+        const { Token } = Dharma.Types;
 
         const { collateralTokenSymbol } = this.state;
 
         const currentAccount = await dharma.blockchain.getCurrentAccount();
 
-        const allowance = new Allowance(dharma, currentAccount, collateralTokenSymbol);
-
-        const txHash = await allowance.makeUnlimitedIfNecessary();
+        const txHash = await Token.makeAllowanceUnlimitedIfNecessary(dharma, collateralTokenSymbol, currentAccount);
 
         this.setState({
             txHash,
         });
     }
 
-    async generateLoanRequest(debtorAddress) {
+    async generateLoanRequest(debtor) {
         const { dharma } = this.props;
 
         const { LoanRequest } = Dharma.Types;
@@ -154,7 +150,7 @@ class CreateLoanRequest extends Component {
             termLength,
         } = this.state;
 
-        return LoanRequest.create(dharma, {
+        const terms = {
             principalAmount: principal,
             principalToken: principalTokenSymbol,
             collateralAmount: collateral,
@@ -164,12 +160,13 @@ class CreateLoanRequest extends Component {
             relayerAddress,
             termDuration: termLength,
             termUnit,
-            debtorAddress,
             expiresInDuration: expirationLength,
             expiresInUnit: expirationUnit,
             // Here we simplistically make the creditor pay the relayer fee.
             creditorFeeAmount: relayerFeeAmount,
-        });
+        }
+
+        return LoanRequest.createAndSignAsDebtor(dharma, terms, debtor);
     }
 
     handleInputChange(event) {
