@@ -2,17 +2,17 @@
 # yarn lockfile v1
 
 
-"@dharmaprotocol/contracts@0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@dharmaprotocol/contracts/-/contracts-0.1.11.tgz#9047b6210d9195aa02a6df737602ffb22532a15a"
+"@dharmaprotocol/contracts@0.1.13":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@dharmaprotocol/contracts/-/contracts-0.1.13.tgz#1054531c28a668b7a06e183644051682bd27235b"
   dependencies:
     zeppelin-solidity "1.8.0"
 
-"@dharmaprotocol/dharma.js@^0.1.65":
-  version "0.1.65"
-  resolved "https://registry.yarnpkg.com/@dharmaprotocol/dharma.js/-/dharma.js-0.1.65.tgz#b576793b34e1d81dd034d17bebf4a836c52ea811"
+"@dharmaprotocol/dharma.js@^0.1.66":
+  version "0.1.66"
+  resolved "https://registry.yarnpkg.com/@dharmaprotocol/dharma.js/-/dharma.js-0.1.66.tgz#5a2ae9143e99b136cfa1e20ea2600250bea71844"
   dependencies:
-    "@dharmaprotocol/contracts" "0.1.11"
+    "@dharmaprotocol/contracts" "0.1.13"
     "@types/lodash" "^4.14.104"
     abi-decoder "https://github.com/dharmaprotocol/abi-decoder"
     bignumber.js "^5.0.0"
@@ -57,9 +57,9 @@ abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
 
-"abi-decoder@https://github.com/dharmaprotocol/abi-decoder":
+"abi-decoder@git+https://github.com/dharmaprotocol/abi-decoder.git":
   version "1.1.0"
-  resolved "https://github.com/dharmaprotocol/abi-decoder#9448e51a134633673ccbb07a3df0ed2b0c47ab62"
+  resolved "git+https://github.com/dharmaprotocol/abi-decoder.git#9448e51a134633673ccbb07a3df0ed2b0c47ab62"
   dependencies:
     babel-core "^6.23.1"
     babel-loader "^6.3.2"
@@ -2261,9 +2261,9 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-dharma-chain@^1.0.14:
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/dharma-chain/-/dharma-chain-1.0.14.tgz#7d119d8dfbb6920b0aedca353280bb3d03375750"
+dharma-chain@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/dharma-chain/-/dharma-chain-1.0.16.tgz#d6a672fb1d41a37e51863f2b84efda4a251900d5"
 
 diff@^3.2.0:
   version "3.5.0"
@@ -7715,9 +7715,9 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   dependencies:
     minimalistic-assert "^1.0.0"
 
-"web3-typescript-typings@https://github.com/graemecode/web3-typescript-typings":
+"web3-typescript-typings@git+https://github.com/graemecode/web3-typescript-typings.git":
   version "0.9.0"
-  resolved "https://github.com/graemecode/web3-typescript-typings#8661a574c4a9dca7b64363392bf9e35037062860"
+  resolved "git+https://github.com/graemecode/web3-typescript-typings.git#8661a574c4a9dca7b64363392bf9e35037062860"
   dependencies:
     bignumber.js "^4.0.2"
 
