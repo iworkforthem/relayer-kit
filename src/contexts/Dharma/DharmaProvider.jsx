@@ -7,6 +7,18 @@ import DharmaContext from "./DharmaContext";
 // are running a testnet or production build and use Metamask.
 const HOST = process.env.REACT_APP_BLOCKCHAIN_HOST;
 
+/**
+ * This method returns a Web3 provider, which is passed to Dharma.js and used to communicate with an
+ * Ethereum blockchain node.
+ *
+ * For local development purposes, the blockchain node is usually a localhost URL such as
+ * localhost:8545. In this case the function should return Web3's HTTP Provider, configured to
+ * use localhost:8545. Depending on the deployment context, there may also be a provider on an
+ * injected web3 instance (for example when using MetaMask in a browser), in which case that
+ * provider is returned.
+ *
+ * @returns {Web3.Provider}
+ */
 function getWeb3Provider() {
     if (HOST) {
         return new Web3.providers.HttpProvider(HOST);
