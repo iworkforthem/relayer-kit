@@ -1,5 +1,6 @@
 const jsonServer = require("json-server");
 const path = require("path");
+const url = require("url");
 
 // NOTE: This should change to the network that you're wanting to deploy against.
 const network = process.env.NETWORK || "local";
@@ -12,7 +13,7 @@ const db = `db-${network}.json`;
 const router = jsonServer.router(`data/${db}`);
 
 const middlewares = jsonServer.defaults({
-    static: path.join(__dirname, "build"),
+    static: path.join(__dirname, "build")
 });
 
 /**
@@ -34,15 +35,15 @@ server.use(middlewares);
  *
  * @param loanData
  */
-const getFee = (loanData) => {
-   const principalAmount = parseFloat(loanData.principalAmount);
+const getFee = loanData => {
+    const principalAmount = parseFloat(loanData.principalAmount);
 
-   if (!principalAmount) {
-       return 0;
-   }
+    if (!principalAmount) {
+        return 0;
+    }
 
     // In this example we return a fee of 5% of the principal amount, rounded down to 2 decimals.
-    const totalFee = (principalAmount / 100) * FEE_PERCENT;
+    const totalFee = principalAmount / 100 * FEE_PERCENT;
     return totalFee.toFixed(2);
 };
 
@@ -51,6 +52,21 @@ server.use(jsonServer.bodyParser);
 // The client can request a relayer fee for some given loan data.
 server.get("/relayerFee", (req, res) => res.json({ fee: getFee(req.query) }));
 server.get("/relayerAddress", (req, res) => res.json({ address: RELAYER_ADDRESS }));
+
+// Standard Relayer API
+server.get("/v0/debt_orders", (req, res) => {
+    const originalQuery = req.query;
+
+    const redirectUrl = url.format({
+        pathname: "/loanRequests",
+        query: {
+            ...originalQuery,
+            standardize: true
+        }
+    });
+
+    res.redirect(redirectUrl);
+});
 
 // Add a "createdAt" field for each new LoanRequest.
 server.use((req, res, next) => {
@@ -64,6 +80,26 @@ server.use((req, res, next) => {
     // Continue to JSON Server router
     next();
 });
+
+router.render = (req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const query = parsedUrl.query;
+
+    if (req.path === "/loanRequests" && query.standardize) {
+        const debtOrders = res.locals.data.map(loanRequest => {
+            return {
+                debtOrder: loanRequest,
+                metaData: { id: loanRequest.id }
+            };
+        });
+
+        res.jsonp({
+            debtOrders
+        });
+    } else {
+        res.jsonp(res.locals.data);
+    }
+};
 
 server.use(router);
 server.listen(process.env.PORT || 8000, () => {
