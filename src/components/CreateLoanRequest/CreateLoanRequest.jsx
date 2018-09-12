@@ -85,7 +85,10 @@ class CreateLoanRequest extends Component {
             const currentAccount = await dharma.blockchain.getCurrentAccount();
             const loanRequest = await this.generateLoanRequest(currentAccount);
 
-            const id = await api.create("loanRequests", loanRequest.toJSON());
+            const id = await api.create("loanRequests", {
+                ...loanRequest.toJSON(),
+                id: loanRequest.getAgreementId(),
+            });
 
             this.props.onCompletion(id);
         } catch (e) {
@@ -124,7 +127,11 @@ class CreateLoanRequest extends Component {
 
         const currentAccount = await dharma.blockchain.getCurrentAccount();
 
-        const txHash = await Token.makeAllowanceUnlimitedIfNecessary(dharma, collateralTokenSymbol, currentAccount);
+        const txHash = await Token.makeAllowanceUnlimitedIfNecessary(
+            dharma,
+            collateralTokenSymbol,
+            currentAccount,
+        );
 
         this.setState({
             txHash,
@@ -164,7 +171,7 @@ class CreateLoanRequest extends Component {
             expiresInUnit: expirationUnit,
             // Here we simplistically make the creditor pay the relayer fee.
             creditorFeeAmount: relayerFeeAmount,
-        }
+        };
 
         return LoanRequest.createAndSignAsDebtor(dharma, terms, debtor);
     }
@@ -383,7 +390,8 @@ class CreateLoanRequest extends Component {
                                         hasSufficientAllowance !== null && !hasSufficientAllowance
                                     }
                                     onAction={this.createLoanRequest}
-                                    onAuthorize={this.authorizeCollateralTransfer}>
+                                    onAuthorize={this.authorizeCollateralTransfer}
+                                >
                                     Create
                                 </AuthorizableAction>
                             </Col>
