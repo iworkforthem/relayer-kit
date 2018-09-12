@@ -1,7 +1,10 @@
 const url = require("url");
 
 const addStandardRelayerApi = (server, router) => {
-    // Standard Relayer API
+    server.post("/v0/debt_order", (req, res) => {
+        res.redirect(307, "/loanRequests");
+    });
+
     server.get("/v0/debt_order/:id", (req, res) => {
         const id = req.params.id;
 
@@ -29,6 +32,16 @@ const addStandardRelayerApi = (server, router) => {
         res.redirect(redirectUrl);
     });
 
+    // correctly format POST requests that are redirected from the Standard Relayer API
+    server.use((req, res, next) => {
+        if (req.method === "POST" && req.path === "/loanRequests" && req.body.debtOrder) {
+            req.body = req.body.debtOrder;
+        }
+
+        next();
+    });
+
+    // reformat responses returned by the Standard Relayer API
     router.render = (req, res) => {
         const parsedUrl = url.parse(req.url, true);
         const query = parsedUrl.query;
