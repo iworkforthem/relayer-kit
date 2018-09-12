@@ -13,7 +13,7 @@ const db = `db-${network}.json`;
 const router = jsonServer.router(`data/${db}`);
 
 const middlewares = jsonServer.defaults({
-    static: path.join(__dirname, "build")
+    static: path.join(__dirname, "build"),
 });
 
 /**
@@ -35,7 +35,7 @@ server.use(middlewares);
  *
  * @param loanData
  */
-const getFee = loanData => {
+const getFee = (loanData) => {
     const principalAmount = parseFloat(loanData.principalAmount);
 
     if (!principalAmount) {
@@ -43,7 +43,7 @@ const getFee = loanData => {
     }
 
     // In this example we return a fee of 5% of the principal amount, rounded down to 2 decimals.
-    const totalFee = principalAmount / 100 * FEE_PERCENT;
+    const totalFee = (principalAmount / 100) * FEE_PERCENT;
     return totalFee.toFixed(2);
 };
 
@@ -54,6 +54,19 @@ server.get("/relayerFee", (req, res) => res.json({ fee: getFee(req.query) }));
 server.get("/relayerAddress", (req, res) => res.json({ address: RELAYER_ADDRESS }));
 
 // Standard Relayer API
+server.get("/v0/debt_order/:id", (req, res) => {
+    const id = req.params.id;
+
+    const redirectUrl = url.format({
+        pathname: `/loanRequests/${id}`,
+        query: {
+            standardize: true,
+        },
+    });
+
+    res.redirect(redirectUrl);
+});
+
 server.get("/v0/debt_orders", (req, res) => {
     const originalQuery = req.query;
 
@@ -61,8 +74,8 @@ server.get("/v0/debt_orders", (req, res) => {
         pathname: "/loanRequests",
         query: {
             ...originalQuery,
-            standardize: true
-        }
+            standardize: true,
+        },
     });
 
     res.redirect(redirectUrl);
@@ -85,16 +98,26 @@ router.render = (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const query = parsedUrl.query;
 
-    if (req.path === "/loanRequests" && query.standardize) {
-        const debtOrders = res.locals.data.map(loanRequest => {
+    if (req.method === "GET" && req.path === "/loanRequests" && query.standardize) {
+        const debtOrders = res.locals.data.map((loanRequest) => {
             return {
                 debtOrder: loanRequest,
-                metaData: { id: loanRequest.id }
+                metaData: { id: loanRequest.id },
             };
         });
 
         res.jsonp({
-            debtOrders
+            total: debtOrders.length,
+            page: 1,
+            perPage: debtOrders.length,
+            debtOrders,
+        });
+    } else if (req.method === "GET" && req.path.match(/loanRequests\/(\d+)/) && query.standardize) {
+        const loanRequest = res.locals.data;
+
+        res.jsonp({
+            debtOrder: loanRequest,
+            metaData: { id: loanRequest.id },
         });
     } else {
         res.jsonp(res.locals.data);
