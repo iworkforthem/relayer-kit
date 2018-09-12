@@ -1,6 +1,7 @@
 const jsonServer = require("json-server");
 const path = require("path");
-const url = require("url");
+
+const { addStandardRelayerApi } = require("./standardRelayerApi");
 
 // NOTE: This should change to the network that you're wanting to deploy against.
 const network = process.env.NETWORK || "local";
@@ -53,34 +54,6 @@ server.use(jsonServer.bodyParser);
 server.get("/relayerFee", (req, res) => res.json({ fee: getFee(req.query) }));
 server.get("/relayerAddress", (req, res) => res.json({ address: RELAYER_ADDRESS }));
 
-// Standard Relayer API
-server.get("/v0/debt_order/:id", (req, res) => {
-    const id = req.params.id;
-
-    const redirectUrl = url.format({
-        pathname: `/loanRequests/${id}`,
-        query: {
-            standardize: true,
-        },
-    });
-
-    res.redirect(redirectUrl);
-});
-
-server.get("/v0/debt_orders", (req, res) => {
-    const originalQuery = req.query;
-
-    const redirectUrl = url.format({
-        pathname: "/loanRequests",
-        query: {
-            ...originalQuery,
-            standardize: true,
-        },
-    });
-
-    res.redirect(redirectUrl);
-});
-
 // Add a "createdAt" field for each new LoanRequest.
 server.use((req, res, next) => {
     if (req.method === "POST") {
@@ -94,35 +67,7 @@ server.use((req, res, next) => {
     next();
 });
 
-router.render = (req, res) => {
-    const parsedUrl = url.parse(req.url, true);
-    const query = parsedUrl.query;
-
-    if (req.method === "GET" && req.path === "/loanRequests" && query.standardize) {
-        const debtOrders = res.locals.data.map((loanRequest) => {
-            return {
-                debtOrder: loanRequest,
-                metaData: { id: loanRequest.id },
-            };
-        });
-
-        res.jsonp({
-            total: debtOrders.length,
-            page: 1,
-            perPage: debtOrders.length,
-            debtOrders,
-        });
-    } else if (req.method === "GET" && req.path.match(/loanRequests\/(\d+)/) && query.standardize) {
-        const loanRequest = res.locals.data;
-
-        res.jsonp({
-            debtOrder: loanRequest,
-            metaData: { id: loanRequest.id },
-        });
-    } else {
-        res.jsonp(res.locals.data);
-    }
-};
+addStandardRelayerApi(server, router);
 
 server.use(router);
 server.listen(process.env.PORT || 8000, () => {
