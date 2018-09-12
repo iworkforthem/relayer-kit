@@ -5,11 +5,11 @@ const addStandardRelayerApi = (server, router) => {
         res.redirect(307, "/loanRequests");
     });
 
-    server.get("/v0/debt_order/:id", (req, res) => {
-        const id = req.params.id;
+    server.get("/v0/debt_order/:agreementId", (req, res) => {
+        const agreementId = req.params.agreementId;
 
         const redirectUrl = url.format({
-            pathname: `/loanRequests/${id}`,
+            pathname: `/loanRequests/${agreementId}`,
             query: {
                 standardize: true,
             },
@@ -50,7 +50,7 @@ const addStandardRelayerApi = (server, router) => {
             const debtOrders = res.locals.data.map((loanRequest) => {
                 return {
                     debtOrder: loanRequest,
-                    metaData: { id: loanRequest.id },
+                    metaData: { agreementId: loanRequest.id },
                 };
             });
 
@@ -69,7 +69,7 @@ const addStandardRelayerApi = (server, router) => {
 
             res.jsonp({
                 debtOrder: loanRequest,
-                metaData: { id: loanRequest.id },
+                metaData: { agreementId: loanRequest.id },
             });
         } else {
             res.jsonp(res.locals.data);
